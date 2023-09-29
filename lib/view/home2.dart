@@ -4,6 +4,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:movie_cafe/class/responsive.dart';
 import 'package:movie_cafe/provider/apiProvider.dart';
 import 'package:movie_cafe/provider/provider.dart';
+import 'package:movie_cafe/services/authservices.dart';
 import 'package:movie_cafe/view/review2.dart';
 import 'package:movie_cafe/view/review_page.dart';
 import 'package:percent_indicator/percent_indicator.dart';
@@ -94,7 +95,7 @@ class Home2 extends ConsumerWidget {
                         'Irfan Faris.k',
                         style: TextStyle(
                             color: ref.read(colorProvider.notifier).state
-                                ? Colors.black
+                                ? Colors.white
                                 : Colors.white,
                             fontWeight: FontWeight.w500,
                             fontSize: Mobile1.width(20, context)),
@@ -103,7 +104,7 @@ class Home2 extends ConsumerWidget {
                         'irfan@gmail.com',
                         style: TextStyle(
                             color: ref.read(colorProvider.notifier).state
-                                ? Colors.black
+                                ? Colors.white
                                 : Colors.white,
                             fontSize: Mobile1.width(16, context)),
                       ),
@@ -200,6 +201,56 @@ class Home2 extends ConsumerWidget {
                       'About',
                       style: TextStyle(
                           color: color1, fontSize: Mobile1.width(18, context)),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: Mobile1.width(20, context)),
+                  child: GestureDetector(
+                    onTap: () async {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text('Do you want to logout ?'),
+                            actions: [
+                              ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.red[700]),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(
+                                    'cancel',
+                                  )),
+                              ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.red[700]),
+                                  onPressed: () {
+                                    AuthServices.logout();
+                                    AuthServices.signout(context);
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(
+                                    'Ok',
+                                  ))
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    child: ListTile(
+                      leading: Icon(
+                        Icons.login_outlined,
+                        color: Colors.red,
+                        size: Mobile1.width(24, context),
+                      ),
+                      title: Text(
+                        'Logout',
+                        style: TextStyle(
+                            color: color1,
+                            fontSize: Mobile1.width(18, context)),
+                      ),
                     ),
                   ),
                 ),

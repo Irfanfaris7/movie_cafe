@@ -1,13 +1,17 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_cafe/class/responsive.dart';
-import 'package:movie_cafe/view/home.dart';
-import 'package:movie_cafe/view/signup_page.dart';
 
-import '../utilities/textfield.dart';
+import 'package:movie_cafe/view/signup_page.dart';
+import '../services/authservices.dart';
+import '../widget/textfield.dart';
 
 class LoginPage extends ConsumerWidget {
-  const LoginPage({super.key});
+  LoginPage({super.key});
+
+  final email = TextEditingController();
+  final password = TextEditingController();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -47,11 +51,15 @@ class LoginPage extends ConsumerWidget {
                     SizedBox(
                       height: Mobile1.height(40, context),
                     ),
-                    const Textfield1(),
+                    Textfield1(
+                      controller: email,
+                    ),
                     SizedBox(
                       height: Mobile1.height(20, context),
                     ),
-                    const Textfield2(),
+                    Textfield2(
+                      controller: password,
+                    ),
                     SizedBox(
                       height: Mobile1.width(8, context),
                     ),
@@ -72,12 +80,63 @@ class LoginPage extends ConsumerWidget {
                     ),
                     Center(
                       child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => Home(),
-                              ));
+                        onTap: () async {
+                          if (email.text.isEmpty && password.text.isEmpty) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text('EMPTY FIELD FOUND'),
+                                content: Text(
+                                  'Fields cannot be empty',
+                                ),
+                                actions: [
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.red[700],
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
+                                    ),
+                                    child: const Text("Ok"),
+                                  ),
+                                ],
+                              ),
+                            );
+                          } else {
+                            try {
+                              await AuthServices.login(
+                                  email.text, password.text);
+                            } on FirebaseAuthException catch (e) {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: Text(e.code
+                                      .toUpperCase()
+                                      .replaceAll("-", " ")),
+                                  content: Text(
+                                    e.message.toString(),
+                                  ),
+                                  actions: [
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.red[700],
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                      ),
+                                      child: const Text("Ok"),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                          }
                         },
                         child: Container(
                           height: Mobile1.width(46, context),
@@ -103,33 +162,33 @@ class LoginPage extends ConsumerWidget {
                 height: Mobile1.width(130, context),
               ),
               Center(
-                  child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Don't have an account?",
-                    style: TextStyle(
-                        fontSize: Mobile1.width(15, context),
-                        fontWeight: FontWeight.w500,
-                        color: const Color.fromARGB(120, 0, 0, 0)),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SignUp(),
-                          ));
-                    },
-                    child: Text(
+                  child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SignUp(),
+                      ));
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Don't have an account?",
+                      style: TextStyle(
+                          fontSize: Mobile1.width(15, context),
+                          fontWeight: FontWeight.w500,
+                          color: const Color.fromARGB(120, 0, 0, 0)),
+                    ),
+                    Text(
                       "Sign Up",
                       style: TextStyle(
                           fontSize: Mobile1.width(15, context),
                           fontWeight: FontWeight.w700,
                           color: Colors.red[700]),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ))
             ],
           ),

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "438344556801",
+    "project_id": "movie-cafe-93f0e",
+    "storage_bucket": "movie-cafe-93f0e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:438344556801:android:688bebe787944f6e8f7b00",
+        "android_client_info": {
+          "package_name": "com.example.movie_cafe"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDpyzZtIi112imlojwzRNayzZtiyyKWizk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

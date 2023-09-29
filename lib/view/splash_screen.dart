@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:movie_cafe/auth_checker.dart';
 import 'package:movie_cafe/class/responsive.dart';
-import 'package:movie_cafe/view/get_started.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -21,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen>
       const Duration(seconds: 4),
       () {
         Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => const GetStarted1(),
+          builder: (context) => const AuthChecker(),
         ));
       },
     );

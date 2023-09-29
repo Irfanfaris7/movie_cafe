@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_cafe/class/responsive.dart';
-import 'package:movie_cafe/view/home.dart';
+import 'package:movie_cafe/services/authservices.dart';
 
-import '../utilities/textfield.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:movie_cafe/view/home2.dart';
+
+import '../widget/textfield.dart';
 
 class SignUp extends ConsumerWidget {
-  const SignUp({super.key});
+  SignUp({super.key});
+
+  final email = TextEditingController();
+  final password = TextEditingController();
+  final confirmpassword = TextEditingController();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -44,41 +51,111 @@ class SignUp extends ConsumerWidget {
                   SizedBox(
                     height: Mobile1.height(40, context),
                   ),
-                  TextField(
-                    decoration: InputDecoration(
-                        hintText: 'Name',
-                        labelText: 'Username',
-                        labelStyle: const TextStyle(
-                            color: Color.fromARGB(223, 0, 0, 0)),
-                        focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: const BorderSide(
-                                color: Color.fromARGB(255, 225, 46, 33))),
-                        prefixIcon: const Icon(Icons.person),
-                        prefixIconColor: const Color.fromARGB(141, 0, 0, 0),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        )),
+                  Textfield1(
+                    controller: email,
                   ),
                   SizedBox(
                     height: Mobile1.height(20, context),
                   ),
-                  const Textfield1(),
+                  Textfield2(
+                    controller: password,
+                  ),
                   SizedBox(
                     height: Mobile1.height(20, context),
                   ),
-                  const Textfield2(),
+                  Textfield3(
+                    controller: confirmpassword,
+                  ),
                   SizedBox(
                     height: Mobile1.width(36, context),
                   ),
                   Center(
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Home(),
-                            ));
+                    child: GestureDetector(
+                      onTap: () async {
+                        if (email.text.isEmpty &&
+                            password.text.isEmpty &&
+                            confirmpassword.text.isEmpty) {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text('EMPTY FIELD FOUND'),
+                              content: Text(
+                                'Fields cannot be empty',
+                              ),
+                              actions: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red[700],
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                  ),
+                                  child: const Text("Ok"),
+                                ),
+                              ],
+                            ),
+                          );
+                        } else if (password.text != confirmpassword.text) {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text('Invalid Fields'),
+                              content: Text(
+                                'Passwords must be same',
+                              ),
+                              actions: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red[700],
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                  ),
+                                  child: const Text("Ok"),
+                                ),
+                              ],
+                            ),
+                          );
+                        } else {
+                          try {
+                            await AuthServices.signUp(
+                                email.text, password.text);
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                            }
+                          } on FirebaseAuthException catch (e) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text(
+                                    e.code.toUpperCase().replaceAll("-", " ")),
+                                content: Text(
+                                  e.message.toString(),
+                                ),
+                                actions: [
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.red[700],
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
+                                    ),
+                                    child: const Text("Ok"),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                        }
                       },
                       child: Container(
                         height: Mobile1.width(48, context),
@@ -123,28 +200,77 @@ class SignUp extends ConsumerWidget {
                     children: [
                       CircleAvatar(
                         backgroundColor: Colors.white,
-                        radius: Mobile1.width(22, context),
+                        radius: Mobile1.width(18, context),
                         backgroundImage: const AssetImage(
                             'assets/images/google-logo-png-webinar-optimizing-for-success-google-business-webinar-13.png'),
                       ),
                       SizedBox(
-                        width: Mobile1.width(6, context),
+                        width: Mobile1.width(4, context),
                       ),
-                      CircleAvatar(
-                        backgroundColor: Colors.white,
-                        radius: Mobile1.width(22, context),
-                        backgroundImage:
-                            const AssetImage('assets/images/229098.png'),
-                      ),
-                      SizedBox(
-                        width: Mobile1.width(6, context),
-                      ),
-                      CircleAvatar(
-                        backgroundColor: Colors.white,
-                        radius: Mobile1.width(22, context),
-                        backgroundImage: const AssetImage(
-                            'assets/images/twitter-logo-vector-png-clipart-1.png'),
-                      ),
+                      GestureDetector(
+                        onTap: () {
+                          try {
+                            AuthServices.signInWithGoogle().then((value) {
+                              if (value.user != null) {
+                                Navigator.pushReplacement(context,
+                                    MaterialPageRoute(
+                                  builder: (context) {
+                                    return Home2();
+                                  },
+                                ));
+                              }
+                            });
+                          } on FirebaseAuthException catch (e) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text(
+                                    e.code.toUpperCase().replaceAll("-", " ")),
+                                content: Text(
+                                  e.message.toString(),
+                                ),
+                                actions: [
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.red[700],
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
+                                    ),
+                                    child: const Text("Ok"),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                        },
+                        child: Text(
+                          'Google',
+                          style: TextStyle(
+                              decoration: TextDecoration.underline,
+                              color: Colors.blue[800],
+                              fontSize: Mobile1.width(18, context),
+                              fontWeight: FontWeight.w500),
+                        ),
+                      )
+                      // CircleAvatar(
+                      //   backgroundColor: Colors.white,
+                      //   radius: Mobile1.width(22, context),
+                      //   backgroundImage:
+                      //       const AssetImage('assets/images/229098.png'),
+                      // ),
+                      // SizedBox(
+                      //   width: Mobile1.width(6, context),
+                      // ),
+                      // CircleAvatar(
+                      //   backgroundColor: Colors.white,
+                      //   radius: Mobile1.width(22, context),
+                      //   backgroundImage: const AssetImage(
+                      //       'assets/images/twitter-logo-vector-png-clipart-1.png'),
+                      // ),
                     ],
                   )
                 ],

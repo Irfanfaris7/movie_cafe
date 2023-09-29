@@ -41,7 +41,7 @@ class GetStarted1 extends StatelessWidget {
                       backgroundColor: Colors.red[700]),
                   onPressed: () {
                     Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => const LoginPage(),
+                      builder: (context) => LoginPage(),
                     ));
                   },
                   child: Text(
